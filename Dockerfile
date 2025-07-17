@@ -15,14 +15,19 @@
 
 
 # Stage 1: Build
-FROM maven:3.8.5-openjdk-17 AS builder
+ARG MAVEN_VERSION=3.8.8-openjdk-17
+FROM maven:${MAVEN_VERSION} AS builder
 WORKDIR /app
-COPY . .
-RUN mvn clean package -DskipTests
+# Run tests to ensure code quality
+RUN mvn test
 
+# Build the application, skipping tests as they are already executed
+RUN mvn clean package -DskipTests
+RUN mvn clean package -DskipTests
+COPY --from=builder /app/target/springboot-app-0.0.1-SNAPSHOT.jar app.jar
 # Stage 2: Run
 FROM openjdk:17-jdk-slim
 WORKDIR /app
 COPY --from=builder /app/target/*.jar app.jar
 EXPOSE 8080
-ENTRYPOINT ["java", "-jar", "app.jar"]
+CMD ["java", "-jar", "app.jar"]
