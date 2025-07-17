@@ -46,15 +46,17 @@ public class UserRepository {
         }
         return false;
     }
-    public void deleteUser(int id) {
+    public boolean deleteUser(int id) {
         String deleteQuery = "DELETE FROM users WHERE id = ?";
         try (Connection connection = getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(deleteQuery)) {
             preparedStatement.setInt(1, id);
             preparedStatement.executeUpdate();
+            return true;
         } catch (SQLException e) {
             e.printStackTrace();
         }
+        return false;
     }
     public void selectUsers() {
         String selectQuery = "SELECT * FROM users";
